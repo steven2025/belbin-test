@@ -1,0 +1,2361 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>贝尔宾团队角色测试</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+<style>
+        :root {
+            --primary: #3498db;
+            --primary-dark: #2980b9;
+            --secondary: #2c3e50;
+            --accent: #e74c3c;
+            --highlight: #f39c12;
+            --highlight2: #2ecc71;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --success: #27ae60;
+            --tech-bg: linear-gradient(135deg, #1a2a6c, #2c3e50, #3498db);
+            --tech-glow: 0 0 15px rgba(52, 152, 219, 0.7);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
+        }
+        
+        body {
+            background: var(--tech-bg);
+            color: var(--light);
+            line-height: 1.6;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(52, 152, 219, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(231, 76, 60, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(243, 156, 18, 0.05) 0%, transparent 50%);
+            z-index: -1;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .screen {
+            display: none;
+            background: rgba(44, 62, 80, 0.85);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), var(--tech-glow);
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .screen::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--accent), var(--highlight));
+            z-index: 1;
+        }
+        
+        .active {
+            display: block;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: var(--light);
+            font-size: 2.2rem;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+        }
+        
+        h2 {
+            margin-bottom: 20px;
+            color: var(--light);
+            font-size: 1.8rem;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: var(--light);
+        }
+        
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--light);
+            transition: all 0.3s;
+        }
+        
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+        }
+        
+        .btn {
+            background: linear-gradient(145deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+            transform: translateY(0);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: all 0.5s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3), var(--tech-glow);
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(145deg, #95a5a6, #7f8c8d);
+        }
+        
+        .btn-back {
+            background: linear-gradient(145deg, #34495e, #2c3e50);
+            margin-bottom: 15px;
+        }
+        
+        .question-container {
+            margin-bottom: 25px;
+        }
+        
+        .question {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border-left: 4px solid var(--primary);
+            transition: all 0.3s;
+        }
+        
+        .question:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateX(5px);
+        }
+        
+        .slider-container {
+            display: flex;
+            align-items: center;
+            margin-top: 15px;
+        }
+        
+        .slider {
+            flex: 1;
+            height: 12px;
+            -webkit-appearance: none;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            outline: none;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, var(--primary), var(--primary-dark));
+            cursor: pointer;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            border: 2px solid white;
+            transition: all 0.3s;
+        }
+        
+        .slider::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+        }
+        
+        .slider-value {
+            width: 50px;
+            text-align: center;
+            margin-left: 15px;
+            font-weight: bold;
+            font-size: 18px;
+            color: var(--light);
+            background: rgba(0, 0, 0, 0.3);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+        
+        /* 固定显示的剩余分数 */
+        .points-remaining-fixed {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--highlight);
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            padding: 15px 25px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3), var(--tech-glow);
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+        
+        /* 滚动跟随的剩余分数 */
+        .points-remaining-sticky {
+            position: sticky;
+            top: 10px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--highlight);
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            padding: 12px 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3), var(--tech-glow);
+            margin-bottom: 15px;
+            z-index: 999;
+            display: none; /* 默认隐藏，在移动端显示 */
+        }
+        
+        /* 移动端显示滚动跟随的剩余分数 */
+        @media (max-width: 768px) {
+            .points-remaining-sticky {
+                display: block;
+            }
+            
+            .points-remaining-fixed {
+                top: 10px;
+                right: 10px;
+                left: auto;
+                font-size: 16px;
+                padding: 10px 15px;
+            }
+        }
+        
+        /* 超小屏幕优化 */
+        @media (max-width: 480px) {
+            .points-remaining-sticky {
+                font-size: 16px;
+                padding: 10px 15px;
+                top: 5px;
+            }
+            
+            .points-remaining-fixed {
+                font-size: 14px;
+                padding: 8px 12px;
+            }
+        }
+        
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            margin: 25px 0;
+        }
+        
+        .role-interpretation {
+            margin-top: 25px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .role-item {
+            margin-bottom: 20px;
+            padding: 20px;
+            border-left: 4px solid var(--primary);
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 0 10px 10px 0;
+            transition: all 0.3s;
+        }
+        
+        .role-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .role-name {
+            font-weight: bold;
+            color: var(--light);
+            margin-bottom: 10px;
+            font-size: 1.4rem;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        
+        .role-score {
+            color: var(--highlight);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+        }
+        
+        .nav-buttons .btn {
+            width: 48%;
+        }
+        
+        .welcome-message {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 18px;
+            line-height: 1.8;
+        }
+        
+        .user-info {
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            font-size: 1.2rem;
+        }
+        
+        .chart-type-selector {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+        
+        .chart-type-btn {
+            margin: 0 8px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--light);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .chart-type-btn.active {
+            background: linear-gradient(145deg, var(--primary), var(--primary-dark));
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .chart-type-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .test-instructions {
+            background: rgba(52, 152, 219, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .motto {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .motto-line1 {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--light);
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .motto-line2 {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .interpretation-content {
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+        
+        .interpretation-content p {
+            text-indent: 2em;
+            margin-bottom: 15px;
+        }
+        
+        .interpretation-section {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .interpretation-section h3 {
+            text-indent: 0;
+            margin-bottom: 15px;
+            color: var(--highlight);
+        }
+        
+        .signature {
+            text-align: right;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .footer-note {
+            text-align: center;
+            margin-top: 20px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .screen {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            h2 {
+                font-size: 1.5rem;
+            }
+            
+            .nav-buttons {
+                flex-direction: column;
+            }
+            
+            .nav-buttons .btn {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            
+            .chart-type-selector {
+                flex-wrap: wrap;
+            }
+            
+            .chart-type-btn {
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+<!-- 登录界面 -->
+<div class="screen active" id="login-screen">
+<h1>贝尔宾团队角色测试</h1>
+<div class="form-group">
+<label for="username">用户名</label>
+<input id="username" placeholder="请输入用户名" type="text"/>
+</div>
+<div class="form-group">
+<label for="password">密码</label>
+<input id="password" placeholder="请输入密码" type="password"/>
+</div>
+<button class="btn" id="login-btn">登录</button>
+<button class="btn btn-secondary" id="register-btn">注册新账号</button>
+</div>
+<!-- 注册界面 -->
+<div class="screen" id="register-screen">
+<button class="btn btn-back" id="back-to-login-from-register">← 返回登录</button>
+<h1>注册新账号</h1>
+<div class="form-group">
+<label for="new-username">用户名</label>
+<input id="new-username" placeholder="请输入用户名" type="text"/>
+</div>
+<div class="form-group">
+<label for="new-password">密码</label>
+<input id="new-password" placeholder="请输入密码" type="password"/>
+</div>
+<div class="form-group">
+<label for="confirm-password">确认密码</label>
+<input id="confirm-password" placeholder="请再次输入密码" type="password"/>
+</div>
+<button class="btn" id="confirm-register-btn">确认注册</button>
+</div>
+<!-- 欢迎界面 -->
+<div class="screen" id="welcome-screen">
+<button class="btn btn-back" id="back-to-login-from-welcome">← 返回登录</button>
+<h1>贝尔宾团队角色测试</h1>
+<div class="motto">
+<div class="motto-line1">个人岂有完美 团队可臻至善</div>
+<div class="motto-line2">测试程序开发：重庆工商大学 鄢清华</div>
+</div>
+<div class="user-info" id="user-info">
+<!-- 用户信息将在这里显示 -->
+</div>
+<div class="welcome-message">
+<p>欢迎参加贝尔宾团队角色测试！</p>
+<p>本测试将帮助您了解自己在团队中的角色倾向。</p>
+<p>测试共有7个部分，每个部分有9个陈述。</p>
+<p>每个部分您有10分可以分配给这些陈述，请根据您的实际情况分配分数。</p>
+</div>
+<button class="btn" id="start-test-btn">开始测试</button>
+</div>
+<!-- 测试界面 -->
+<div class="screen" id="test-screen">
+<button class="btn btn-back" id="back-to-welcome-from-test">← 返回首页</button>
+<h2 id="test-part-title">第一部分：我能为团队做出的贡献</h2>
+<div class="test-instructions">
+<p><strong>测评方法：</strong>您有10分可以分配给下面的9个陈述，每个陈述的赋分取决于您同意该陈述的程度。某些陈述您可以不给分，但总分必须恰好为10分。</p>
+</div>
+<!-- 固定显示的剩余分数 -->
+<div class="points-remaining-fixed" id="points-remaining-fixed" style="">剩余分数: 10</div>
+<div class="question-container" id="questions-container">
+<!-- 滚动跟随的剩余分数（移动端显示） -->
+<div class="points-remaining-sticky" id="points-remaining-sticky">剩余分数: 10</div>
+<!-- 问题将在这里动态生成 -->
+</div>
+<div class="nav-buttons">
+<button class="btn btn-secondary" id="prev-part-btn" style="display: none;">上一部分</button>
+<button class="btn" id="next-part-btn">下一部分</button>
+</div>
+</div>
+<!-- 测试完成界面 -->
+<div class="screen" id="test-complete-screen">
+<button class="btn btn-back" id="back-to-test-from-complete">← 返回测试</button>
+<h1>测试完成</h1>
+<p>恭喜您已完成所有测试部分！</p>
+<p>现在您可以查看详细的测试报告。</p>
+<button class="btn" id="view-report-btn">查看报告</button>
+</div>
+<!-- 报告界面 -->
+<div class="screen" id="report-screen">
+<button class="btn btn-back" id="back-to-complete-from-report">← 返回上一页</button>
+<div class="user-info" id="report-user-info">
+<!-- 用户信息将在这里显示 -->
+</div>
+<h2>您的贝尔宾团队角色测试结果</h2>
+<div class="chart-type-selector">
+<button class="chart-type-btn active" data-type="radar">蛛网图</button>
+<button class="chart-type-btn" data-type="bar">柱状图</button>
+<button class="chart-type-btn" data-type="polarArea">极地区域图</button>
+</div>
+<div class="chart-container">
+<canvas id="results-chart"></canvas>
+</div>
+<div class="role-interpretation">
+<h3>您的核心角色</h3>
+<div id="top-roles">
+<!-- 最高分角色将在这里显示 -->
+</div>
+<button class="btn" id="view-interpretation-btn">查看角色详细解读</button>
+</div>
+<div class="nav-buttons">
+<button class="btn btn-secondary" id="back-to-welcome-from-report">返回首页</button>
+<button class="btn" id="restart-test-btn">重新测试</button>
+</div>
+</div>
+<!-- 角色解读界面 -->
+<div class="screen" id="interpretation-screen">
+<button class="btn btn-back" id="back-to-report-from-interpretation">← 返回报告</button>
+<div class="user-info" id="interpretation-user-info">
+<!-- 用户信息将在这里显示 -->
+</div>
+<h2>角色详细解读</h2>
+<div class="interpretation-content" id="role-details">
+<!-- 角色解读将在这里显示 -->
+</div>
+<div class="footer-note">
+                重庆工商大学 贝尔宾团队角色测试系统
+            </div>
+</div>
+<div class="lang-fab" style="position:fixed;bottom:18px;right:18px;z-index:1100;">
+<button id="lang-toggle" style="border:none;border-radius:999px;padding:12px 14px;background:linear-gradient(145deg,#222f3e,#34495e);color:#fff;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,.35);display:flex;align-items:center;gap:8px;font-weight:bold">
+<span>🌐</span><span id="lang-current">中文</span>
+</button>
+<div id="lang-panel" style="position:absolute;bottom:60px;right:0;background:rgba(0,0,0,.85);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:8px;display:none">
+<div class="lang-item" data-lang="zh" style="padding:8px 12px;border-radius:8px;cursor:pointer;white-space:nowrap">中文 (ZH)</div>
+<div class="lang-item" data-lang="en" style="padding:8px 12px;border-radius:8px;cursor:pointer;white-space:nowrap">English (EN)</div>
+<div class="lang-item" data-lang="fr" style="padding:8px 12px;border-radius:8px;cursor:pointer;white-space:nowrap">Français (FR)</div>
+<div class="lang-item" data-lang="th" style="padding:8px 12px;border-radius:8px;cursor:pointer;white-space:nowrap">ไทย (TH)</div>
+<div class="lang-item" data-lang="ru" style="padding:8px 12px;border-radius:8px;cursor:pointer;white-space:nowrap">Русский (RU)</div>
+<div class="lang-item" data-lang="id" style="padding:8px 12px;border-radius:8px;cursor:pointer;white-space:nowrap">Bahasa Indonesia (ID)</div>
+</div>
+</div>
+</div>
+<script>
+        // 测试数据 - 基于您提供的Excel文件
+        const testData = {
+            parts: [
+                {
+                    title: "第一部分：我认为我能为团队做出贡献是",
+                    questions: [
+                        "我能很快地发现并把握住新的机遇",
+                        "我能与各种类型的人一起合作共事",
+                        "我通常能意识到什么是现实的，什么是可能的",
+                        "我能把事情办成，这主要靠我个人的实力",
+                        "我的能力在于，一旦发现某些对实现集体目标很有价值的人，我就及时把他们推荐出来",
+                        "我的专业知识和技能是我的主要财富",
+                        "在选择行动方案时，我能不带倾向性，也不带偏见地提出一个合理的替代方案",
+                        "我生来就爱出主意",
+                        "如果最终能导致有益的结果，我愿面对暂时的冷遇"
+                    ]
+                },
+                {
+                    title: "第二部分：在团队中，我可能有的弱点是",
+                    questions: [
+                        "如果会议没有得到很好的组织、控制和主持，我会感到不痛快",
+                        "我的客观算法，使我很难与同事们打成一片",
+                        "可能由于我过分重视集体的气氛，我发现自己很难与众不同",
+                        "我易于陷入突发的想象之中，而忘了正在进行的事情",
+                        "我的同事认为我过分注意细节，总有不必要的担心，怕把事情搞糟",
+                        "在一定要把事情办成的情况下，我有时使人感到特别强硬以至专断",
+                        "我容易对那些有高见而又没有适当地发表出来的人表现得过于宽容",
+                        "我不是很情愿去贡献除非话题跟我非常相关",
+                        "只要集体在讨论新的观点，我总是说的太多"
+                    ]
+                },
+                {
+                    title: "第三部分：当我与其他人共同进行一项工作时",
+                    questions: [
+                        "在提出独到见解方面，我是数一数二的",
+                        "我随时注意防止粗心和工作中的疏忽",
+                        "我有在不施加任何压力的情况下，去影响其他人的能力",
+                        "我热衷寻求最新的思想和新的发展",
+                        "我努力保持我的职业道德",
+                        "我相信我的判断能力有助于做出正确的决策",
+                        "对于与大家共同利益有关的积极建议我总是乐于支持的",
+                        "我愿意施加压力以换取行动，确保会议不是在浪费时间或离题太远",
+                        "我能使人放心的是，对那些最基本的工作，我都能组织得'井井有条'"
+                    ]
+                },
+                {
+                    title: "第四部分：我在工作团队中的特征是",
+                    questions: [
+                        "我有兴趣更多地了解我的同事",
+                        "尽管我对所有的观点都感兴趣，但这并不影响我在必要的时候下决心",
+                        "我经常向别人的见解进行挑战或坚持自己的意见",
+                        "我认为，只要计划必须开始执行，我有推动工作运转的才能",
+                        "我有意避免使自己太突出或出人意料",
+                        "我乐于与工作团队以外的人进行联系",
+                        "对承担的任何工作，我都能做到尽善尽美",
+                        "在辩论中，我通常能找到论据去推翻那些不甚有理的主张",
+                        "当我知道我们在谈论什么的时候我的贡献比较大"
+                    ]
+                },
+                {
+                    title: "第五部分：在工作中，我得到满足，因为",
+                    questions: [
+                        "我喜欢分析情况，权衡所有可能的选择",
+                        "我觉得我在运用我的专业技能和知识使团队进步",
+                        "我很高兴能找到一块可以发挥我想象力的天地",
+                        "我感到我的身上有一种能使我全身心地投入到工作中去的气质",
+                        "我对寻找解决问题的可行方案感兴趣",
+                        "我感到，我在促进良好的工作关系",
+                        "我能适应那些有新意的人",
+                        "我能使人们在某项必要的行动上达成一致意见",
+                        "我能对决策有强烈的影响"
+                    ]
+                },
+                {
+                    title: "第六部分：如果突然给我一件困难的工作，而且时间有限，人员不熟",
+                    questions: [
+                        "我会阅读尽量多的相关内容寻求指导",
+                        "尽管困难重重，我也能保证目标始终如一",
+                        "我愿意展开广泛的讨论意在激发新思想，推动工作",
+                        "我认为我能保持头脑冷静，富有条理地思考问题",
+                        "我会设想通过用人所长的方法来减轻工作负担",
+                        "在有新方案之前，我宁愿先躲进角落，拟定出一个解脱困境的方案",
+                        "如果集体工作没有进展，我会采取积极措施去加以推动",
+                        "我天生的紧迫感，将有助于我们不会落在计划后面",
+                        "我比较愿意与那些表现出积极态度的人一道工作"
+                    ]
+                },
+                {
+                    title: "第七部分：对于那些在团队工作中或与周围人共事时所遇到的问题",
+                    questions: [
+                        "我很容易对那些阻碍前进的人表现出不耐烦",
+                        "当我与真正的对立面发生冲突时，我没有把握使对方理解我的观点",
+                        "我不喜欢感觉我的时间被浪费而情愿自己一个人工作",
+                        "对于那些我不能做的事，我有意识地求助于他人",
+                        "我常常容易产生厌烦感，需要一、二个有激情的人使我振作起来",
+                        "我强烈有做好工作追求完美的愿望，可能会阻碍工作的持续进展",
+                        "别人可能批评我太重分析而缺少直觉",
+                        "如果目标不明确，让我起步是很困难的",
+                        "对于我遇到的复杂问题，我有时不善于加以解释和澄清"
+                    ]
+                }
+            ],
+            roles: [
+                { 
+                    name: "执行者", 
+                    code: "IMP", 
+                    description: "务实、可靠，能将想法转化为实际行动",
+                    strengths: "务实、可靠、有组织能力，能将想法转化为实际行动，遵守纪律，工作努力",
+                    weaknesses: "可能缺乏灵活性，对新的可能性反应迟钝，有时过于保守",
+                    contributions: "将决策和概念转化为可管理的工作任务，系统高效地执行商定的计划"
+                },
+                { 
+                    name: "协调者", 
+                    code: "CO", 
+                    description: "成熟、自信，能明确目标并促进决策",
+                    strengths: "成熟、自信、能明确目标，促进决策和委托，善于识别人才和资源",
+                    weaknesses: "可能被视为操纵他人，将自己工作委托给他人，有时缺乏实操能力",
+                    contributions: "帮助明确团队目标，促进决策，确保所有成员的潜力得到发挥"
+                },
+                { 
+                    name: "塑造者", 
+                    code: "SH", 
+                    description: "充满活力、抗压能力强，能克服障碍",
+                    strengths: "充满活力、抗压能力强，能挑战惰性和自满，推动团队前进",
+                    weaknesses: "可能容易挑衅，伤害他人感情，缺乏耐心，容易引发冲突",
+                    contributions: "提供动力和干劲，挑战团队提高绩效水平，在压力下蓬勃发展"
+                },
+                { 
+                    name: "智多星", 
+                    code: "PL", 
+                    description: "有创造力、想象力丰富，能解决难题",
+                    strengths: "有创造力、想象力丰富，能解决复杂问题，提出创新想法",
+                    weaknesses: "可能忽略细节，过于沉浸于思考而沟通不足，不注重实际执行",
+                    contributions: "提出新想法和策略，特别关注重大问题，为团队问题寻找创新解决方案"
+                },
+                { 
+                    name: "资源调查者", 
+                    code: "RI", 
+                    description: "外向、热情，能探索机会并建立联系",
+                    strengths: "外向、热情、善于沟通，能探索机会和发展联系，建立广泛网络",
+                    weaknesses: "可能过于乐观，失去兴趣后热情迅速消退，缺乏持续跟进",
+                    contributions: "探索外部机会，发展有用的联系人，进行有助于团队利益的谈判"
+                },
+                { 
+                    name: "监督评价者", 
+                    code: "ME", 
+                    description: "冷静、有战略眼光，能做出准确判断",
+                    strengths: "冷静、有战略眼光、有辨别力，能做出准确判断，客观分析情况",
+                    weaknesses: "可能缺乏动力和能力去激励他人，显得冷漠和挑剔",
+                    contributions: "从所有可用选项中进行冷静分析，做出正确决策，防止团队误入歧途"
+                },
+                { 
+                    name: "凝聚者", 
+                    code: "TW", 
+                    description: "合作、温和，能倾听并防止摩擦",
+                    strengths: "合作、温和、有感知力，能倾听和防止摩擦，促进团队和谐",
+                    weaknesses: "可能在关键时刻优柔寡断，避免冲突，难以做出艰难决定",
+                    contributions: "支持团队成员，增进团队和谐，在压力情况下特别有价值"
+                },
+                { 
+                    name: "完成者", 
+                    code: "CF", 
+                    description: "勤勤恳恳、认真，能发现错误并按时交付",
+                    strengths: "勤勤恳恳、认真、注重细节，能发现错误和遗漏，确保高质量交付",
+                    weaknesses: "可能不愿委托，过于担心小细节，容易焦虑，难以看到大局",
+                    contributions: "确保团队不会犯粗心错误，搜寻需要特别注意的工作，保持团队紧迫感"
+                },
+                { 
+                    name: "专家", 
+                    code: "SP", 
+                    description: "专注、自我激励，能提供稀缺的知识和技能",
+                    strengths: "专注、自我激励，能提供稀缺的知识和技能，在专业领域贡献深度",
+                    weaknesses: "可能只贡献于狭窄的领域，忽视大局，难以与非专业人士沟通",
+                    contributions: "在知识或技能的关键领域提供专业知识和专注，解决技术难题"
+                }
+            ],
+            // 每个部分中每个问题对应的角色索引
+            questionRoleMapping: [
+                [4, 6, 0, 2, 1, 8, 5, 3, 7], // 第一部分
+                [1, 5, 6, 3, 7, 2, 6, 8, 3], // 第二部分
+                [3, 7, 1, 4, 0, 5, 6, 2, 0], // 第三部分
+                [6, 5, 2, 0, 6, 4, 7, 5, 8], // 第四部分
+                [5, 8, 3, 2, 0, 6, 4, 1, 2], // 第五部分
+                [8, 0, 3, 5, 1, 3, 2, 7, 6], // 第六部分
+                [2, 6, 8, 4, 4, 7, 5, 0, 5]  // 第七部分
+            ]
+        };
+
+        // 应用状态
+        let appState = {
+            currentUser: null,
+            currentPart: 0,
+            userAnswers: Array(7).fill().map(() => Array(9).fill(0)),
+            chart: null
+        };
+
+        // DOM 元素
+        const screens = {
+            login: document.getElementById('login-screen'),
+            register: document.getElementById('register-screen'),
+            welcome: document.getElementById('welcome-screen'),
+            test: document.getElementById('test-screen'),
+            testComplete: document.getElementById('test-complete-screen'),
+            report: document.getElementById('report-screen'),
+            interpretation: document.getElementById('interpretation-screen')
+        };
+
+        // 初始化事件监听器
+        function initEventListeners() {
+            // 登录/注册相关
+            document.getElementById('login-btn').addEventListener('click', handleLogin);
+            document.getElementById('register-btn').addEventListener('click', showRegisterScreen);
+            document.getElementById('confirm-register-btn').addEventListener('click', handleRegister);
+            document.getElementById('back-to-login-from-register').addEventListener('click', showLoginScreen);
+            
+            // 返回按钮
+            document.getElementById('back-to-login-from-welcome').addEventListener('click', showLoginScreen);
+            document.getElementById('back-to-welcome-from-test').addEventListener('click', showWelcomeScreen);
+            document.getElementById('back-to-test-from-complete').addEventListener('click', showTestScreen);
+            document.getElementById('back-to-complete-from-report').addEventListener('click', showTestCompleteScreen);
+            document.getElementById('back-to-report-from-interpretation').addEventListener('click', showReportScreen);
+            document.getElementById('back-to-welcome-from-report').addEventListener('click', showWelcomeScreen);
+            
+            // 测试流程相关
+            document.getElementById('start-test-btn').addEventListener('click', startTest);
+            document.getElementById('prev-part-btn').addEventListener('click', goToPreviousPart);
+            document.getElementById('next-part-btn').addEventListener('click', goToNextPart);
+            document.getElementById('view-report-btn').addEventListener('click', showReportScreen);
+            
+            // 报告相关
+            document.getElementById('view-interpretation-btn').addEventListener('click', showInterpretationScreen);
+            document.getElementById('restart-test-btn').addEventListener('click', restartTest);
+            
+            // 图表类型选择
+            document.querySelectorAll('.chart-type-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.chart-type-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    updateChart(this.getAttribute('data-type'));
+                });
+            });
+        }
+
+        // 显示特定屏幕
+        function showScreen(screenName) {
+            Object.values(screens).forEach(screen => {
+                screen.classList.remove('active');
+                // 隐藏剩余分数显示，除非是测试界面
+                if (screenName !== 'test') {
+                    document.getElementById('points-remaining-fixed').style.display = 'none';
+                }
+            });
+            screens[screenName].classList.add('active');
+            
+            // 如果是测试界面，显示剩余分数
+            if (screenName === 'test') {
+                document.getElementById('points-remaining-fixed').style.display = 'block';
+            }
+        }
+
+        // 显示登录屏幕
+        function showLoginScreen() {
+            showScreen('login');
+        }
+
+        // 显示注册屏幕
+        function showRegisterScreen() {
+            showScreen('register');
+        }
+
+        // 显示欢迎屏幕
+        function showWelcomeScreen() {
+            document.getElementById('user-info').textContent = `欢迎，${appState.currentUser.name}`;
+            showScreen('welcome');
+        }
+
+        // 显示测试屏幕
+        function showTestScreen() {
+            showScreen('test');
+        }
+
+        // 显示测试完成屏幕
+        function showTestCompleteScreen() {
+            showScreen('testComplete');
+        }
+
+        // 登录处理
+        function handleLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (!username || !password) {
+                alert('请输入用户名和密码');
+                return;
+            }
+            
+            // 简单的本地存储验证（实际应用中应有更安全的方法）
+            const users = JSON.parse(localStorage.getItem('belbinUsers') || '{}');
+            
+            if (users[username] && users[username].password === password) {
+                appState.currentUser = {
+                    username: username,
+                    name: users[username].name || username
+                };
+                // 保存当前用户到localStorage
+                localStorage.setItem('belbinCurrentUser', JSON.stringify(appState.currentUser));
+                showWelcomeScreen();
+            } else {
+                alert('用户名或密码错误');
+            }
+        }
+
+        // 注册处理
+        function handleRegister() {
+            const username = document.getElementById('new-username').value;
+            const password = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            
+            if (!username || !password) {
+                alert('请输入用户名和密码');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                alert('两次输入的密码不一致');
+                return;
+            }
+            
+            // 保存用户信息（实际应用中应有更安全的方法）
+            const users = JSON.parse(localStorage.getItem('belbinUsers') || '{}');
+            
+            if (users[username]) {
+                alert('用户名已存在');
+                return;
+            }
+            
+            users[username] = {
+                password: password,
+                name: username,
+                createdAt: new Date().toISOString()
+            };
+            
+            localStorage.setItem('belbinUsers', JSON.stringify(users));
+            alert('注册成功，请登录');
+            showLoginScreen();
+        }
+
+        // 开始测试
+        function startTest() {
+            appState.currentPart = 0;
+            loadTestPart(0);
+            showScreen('test');
+        }
+
+        // 加载测试部分
+        function loadTestPart(partIndex) {
+            const part = testData.parts[partIndex];
+            document.getElementById('test-part-title').textContent = part.title;
+            
+            // 更新导航按钮
+            document.getElementById('prev-part-btn').style.display = partIndex > 0 ? 'block' : 'none';
+            document.getElementById('next-part-btn').textContent = partIndex < 6 ? '下一部分' : '完成测试';
+            
+            // 生成问题
+            const questionsContainer = document.getElementById('questions-container');
+            questionsContainer.innerHTML = '';
+            
+            // 添加滚动跟随的剩余分数（移动端显示）
+            const stickyPointsElement = document.createElement('div');
+            stickyPointsElement.className = 'points-remaining-sticky';
+            stickyPointsElement.id = 'points-remaining-sticky';
+            stickyPointsElement.textContent = '剩余分数: 10';
+            questionsContainer.appendChild(stickyPointsElement);
+            
+            part.questions.forEach((question, index) => {
+                const questionElement = document.createElement('div');
+                questionElement.className = 'question';
+                questionElement.innerHTML = `
+                    <p>${question}</p>
+                    <div class="slider-container">
+                        <input type="range" min="0" max="10" value="${appState.userAnswers[partIndex][index]}" 
+                               class="slider" data-part="${partIndex}" data-question="${index}">
+                        <span class="slider-value">${appState.userAnswers[partIndex][index]}</span>
+                    </div>
+                `;
+                questionsContainer.appendChild(questionElement);
+            });
+            
+            // 添加滑块事件监听
+            document.querySelectorAll('.slider').forEach(slider => {
+                slider.addEventListener('input', handleSliderChange);
+            });
+            
+            // 更新剩余分数显示
+            updateRemainingPoints(partIndex);
+        }
+
+        // 处理滑块变化
+        function handleSliderChange(event) {
+            const slider = event.target;
+            const partIndex = parseInt(slider.getAttribute('data-part'));
+            const questionIndex = parseInt(slider.getAttribute('data-question'));
+            const value = parseInt(slider.value);
+            
+            // 更新显示的值
+            slider.nextElementSibling.textContent = value;
+            
+            // 更新答案状态
+            appState.userAnswers[partIndex][questionIndex] = value;
+            
+            // 更新剩余分数显示
+            updateRemainingPoints(partIndex);
+        }
+
+        // 更新剩余分数显示
+        function updateRemainingPoints(partIndex) {
+            const total = appState.userAnswers[partIndex].reduce((sum, value) => sum + value, 0);
+            const remaining = 10 - total;
+            
+            // 更新两个位置的显示
+            const fixedElement = document.getElementById('points-remaining-fixed');
+            const stickyElement = document.getElementById('points-remaining-sticky');
+            
+            fixedElement.textContent = `剩余分数: ${remaining}`;
+            stickyElement.textContent = `剩余分数: ${remaining}`;
+            
+            // 根据剩余分数更新颜色
+            const updateColor = (element) => {
+                if (remaining < 0) {
+                    element.style.color = '#e74c3c';
+                } else if (remaining === 0) {
+                    element.style.color = '#27ae60';
+                } else {
+                    element.style.color = '#f39c12';
+                }
+            };
+            
+            updateColor(fixedElement);
+            updateColor(stickyElement);
+        }
+
+        // 转到下一部分
+        function goToNextPart() {
+            const currentPart = appState.currentPart;
+            const total = appState.userAnswers[currentPart].reduce((sum, value) => sum + value, 0);
+            
+            if (total !== 10) {
+                alert(`本部分您已分配了${total}分，请确保总分恰好为10分`);
+                return;
+            }
+            
+            if (currentPart < 6) {
+                appState.currentPart++;
+                loadTestPart(appState.currentPart);
+            } else {
+                // 保存测试结果
+                saveTestResults();
+                showScreen('testComplete');
+            }
+        }
+
+        // 保存测试结果
+        function saveTestResults() {
+            if (!appState.currentUser) return;
+            
+            const users = JSON.parse(localStorage.getItem('belbinUsers') || '{}');
+            if (users[appState.currentUser.username]) {
+                users[appState.currentUser.username].lastTestResults = {
+                    answers: appState.userAnswers,
+                    completedAt: new Date().toISOString()
+                };
+                localStorage.setItem('belbinUsers', JSON.stringify(users));
+            }
+        }
+
+        // 转到上一部分
+        function goToPreviousPart() {
+            if (appState.currentPart > 0) {
+                appState.currentPart--;
+                loadTestPart(appState.currentPart);
+            }
+        }
+
+        // 显示报告屏幕
+        function showReportScreen() {
+            document.getElementById('report-user-info').textContent = `用户: ${appState.currentUser.name}`;
+            calculateResults();
+            showScreen('report');
+        }
+
+        // 计算测试结果
+        function calculateResults() {
+            const roleScores = Array(9).fill(0);
+            
+            // 根据用户答案和问题-角色映射计算每个角色的得分
+            for (let partIndex = 0; partIndex < 7; partIndex++) {
+                for (let questionIndex = 0; questionIndex < 9; questionIndex++) {
+                    const roleIndex = testData.questionRoleMapping[partIndex][questionIndex];
+                    roleScores[roleIndex] += appState.userAnswers[partIndex][questionIndex];
+                }
+            }
+            
+            // 保存结果到应用状态
+            appState.roleScores = roleScores;
+            
+            // 显示最高分角色
+            displayTopRoles(roleScores);
+            
+            // 更新图表
+            updateChart('radar');
+        }
+
+        // 显示最高分角色
+        function displayTopRoles(roleScores) {
+            const topRolesContainer = document.getElementById('top-roles');
+            topRolesContainer.innerHTML = '';
+            
+            // 创建角色得分数组并排序
+            const roleScoreArray = roleScores.map((score, index) => ({
+                role: testData.roles[index],
+                score: score
+            }));
+            
+            // 按得分排序
+            roleScoreArray.sort((a, b) => b.score - a.score);
+            
+            // 显示前3个角色
+            for (let i = 0; i < 3 && i < roleScoreArray.length; i++) {
+                const roleItem = document.createElement('div');
+                roleItem.className = 'role-item';
+                roleItem.innerHTML = `
+                    <div class="role-name">${roleScoreArray[i].role.name}</div>
+                    <div class="role-score">得分: ${roleScoreArray[i].score}</div>
+                    <p>${roleScoreArray[i].role.description}</p>
+                `;
+                topRolesContainer.appendChild(roleItem);
+            }
+        }
+
+        // 更新图表
+        function updateChart(chartType) {
+            const ctx = document.getElementById('results-chart').getContext('2d');
+            
+            // 如果已有图表，销毁它
+            if (appState.chart) {
+                appState.chart.destroy();
+            }
+            
+            // 创建角色得分数组并排序
+            const roleScoreArray = appState.roleScores.map((score, index) => ({
+                role: testData.roles[index],
+                score: score,
+                index: index
+            }));
+            
+            // 按得分排序
+            roleScoreArray.sort((a, b) => b.score - a.score);
+            
+            // 提取排序后的角色名称和得分
+            const sortedRoleNames = roleScoreArray.map(item => item.role.name);
+            const sortedRoleScores = roleScoreArray.map(item => item.score);
+            const maxScore = Math.max(...sortedRoleScores);
+            const secondMaxScore = sortedRoleScores.length > 1 ? sortedRoleScores[1] : 0;
+            
+            // 根据选择的图表类型创建图表
+            switch(chartType) {
+                case 'radar':
+                    // 对于雷达图，我们需要原始顺序的数据
+                    const roleNames = testData.roles.map(role => role.name);
+                    const roleScores = appState.roleScores;
+                    
+                    appState.chart = new Chart(ctx, {
+                        type: 'radar',
+                        data: {
+                            labels: roleNames,
+                            datasets: [{
+                                label: '角色得分',
+                                data: roleScores,
+                                backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                                borderColor: 'rgba(52, 152, 219, 1)',
+                                borderWidth: 2,
+                                pointBackgroundColor: roleScores.map(score => 
+                                    score === maxScore ? 'rgba(243, 156, 18, 1)' : 'rgba(52, 152, 219, 1)'
+                                ),
+                                pointBorderColor: '#fff',
+                                pointBorderWidth: 2,
+                                pointRadius: roleScores.map(score => 
+                                    score === maxScore ? 8 : 5
+                                ),
+                                pointHoverRadius: roleScores.map(score => 
+                                    score === maxScore ? 10 : 7
+                                )
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                r: {
+                                    angleLines: {
+                                        display: true,
+                                        color: 'rgba(255, 255, 255, 0.1)'
+                                    },
+                                    grid: {
+                                        color: 'rgba(255, 255, 255, 0.1)'
+                                    },
+                                    pointLabels: {
+                                        color: 'rgba(255, 255, 255, 0.8)',
+                                        font: {
+                                            size: 12
+                                        }
+                                    },
+                                    ticks: {
+                                        color: 'rgba(255, 255, 255, 0.6)',
+                                        backdropColor: 'transparent'
+                                    },
+                                    suggestedMin: 0,
+                                    suggestedMax: Math.max(...roleScores) + 5
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    display: false
+                                }
+                            }
+                        }
+                    });
+                    break;
+                    
+                case 'bar':
+                    // 为柱状图准备背景颜色数组（最高值用橙色，第二高用绿色）
+                    const backgroundColors = sortedRoleScores.map(score => {
+                        if (score === maxScore) return 'rgba(243, 156, 18, 0.7)';
+                        if (score === secondMaxScore) return 'rgba(46, 204, 113, 0.7)';
+                        return 'rgba(52, 152, 219, 0.7)';
+                    });
+                    
+                    const borderColors = sortedRoleScores.map(score => {
+                        if (score === maxScore) return 'rgba(243, 156, 18, 1)';
+                        if (score === secondMaxScore) return 'rgba(46, 204, 113, 1)';
+                        return 'rgba(52, 152, 219, 1)';
+                    });
+                    
+                    appState.chart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: sortedRoleNames,
+                            datasets: [{
+                                label: '角色得分',
+                                data: sortedRoleScores,
+                                backgroundColor: backgroundColors,
+                                borderColor: borderColors,
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    max: Math.max(...sortedRoleScores) + 5,
+                                    grid: {
+                                        color: 'rgba(255, 255, 255, 0.1)'
+                                    },
+                                    ticks: {
+                                        color: 'rgba(255, 255, 255, 0.8)'
+                                    }
+                                },
+                                x: {
+                                    grid: {
+                                        color: 'rgba(255, 255, 255, 0.1)'
+                                    },
+                                    ticks: {
+                                        color: 'rgba(255, 255, 255, 0.8)',
+                                        maxRotation: 45,
+                                        minRotation: 45
+                                    }
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    display: false
+                                }
+                            }
+                        }
+                    });
+                    break;
+                    
+                case 'polarArea':
+                    appState.chart = new Chart(ctx, {
+                        type: 'polarArea',
+                        data: {
+                            labels: sortedRoleNames,
+                            datasets: [{
+                                label: '角色得分',
+                                data: sortedRoleScores,
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.7)',
+                                    'rgba(54, 162, 235, 0.7)',
+                                    'rgba(255, 206, 86, 0.7)',
+                                    'rgba(75, 192, 192, 0.7)',
+                                    'rgba(153, 102, 255, 0.7)',
+                                    'rgba(255, 159, 64, 0.7)',
+                                    'rgba(199, 199, 199, 0.7)',
+                                    'rgba(83, 102, 255, 0.7)',
+                                    'rgba(40, 159, 64, 0.7)'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                r: {
+                                    grid: {
+                                        color: 'rgba(255, 255, 255, 0.1)'
+                                    },
+                                    ticks: {
+                                        color: 'rgba(255, 255, 255, 0.6)',
+                                        backdropColor: 'transparent'
+                                    },
+                                    suggestedMin: 0,
+                                    suggestedMax: Math.max(...sortedRoleScores) + 5
+                                }
+                            }
+                        }
+                    });
+                    break;
+            }
+        }
+
+        // 显示角色解读屏幕
+        function showInterpretationScreen() {
+            document.getElementById('interpretation-user-info').textContent = `用户: ${appState.currentUser.name}`;
+            
+            const roleDetailsContainer = document.getElementById('role-details');
+            
+            // 创建角色得分数组并排序
+            const roleScoreArray = appState.roleScores.map((score, index) => ({
+                role: testData.roles[index],
+                score: score
+            }));
+            
+            // 按得分排序
+            roleScoreArray.sort((a, b) => b.score - a.score);
+            
+            // 获取当前日期
+            const currentDate = new Date();
+            const formattedDate = `${currentDate.getFullYear()}年${currentDate.getMonth()+1}月${currentDate.getDate()}日`;
+            
+            // 生成个性化解读报告
+            let interpretationHTML = '';
+            
+            // 主要角色解读
+            if (roleScoreArray.length > 0) {
+                const primaryRole = roleScoreArray[0];
+                interpretationHTML += `
+                    <div class="interpretation-section">
+                        <h3>${appState.currentUser.name}，根据测试结果，您在团队中的主要角色是：${primaryRole.role.name}</h3>
+                        <p><strong>主要描述：</strong>${primaryRole.role.description}</p>
+                        <p><strong>优势：</strong>${primaryRole.role.strengths}</p>
+                        <p><strong>可接受的弱点：</strong>${primaryRole.role.weaknesses}</p>
+                        <p><strong>对团队的贡献：</strong>${primaryRole.role.contributions}</p>
+                    </div>
+                `;
+            }
+            
+            // 次要角色解读
+            if (roleScoreArray.length > 1) {
+                const secondaryRole = roleScoreArray[1];
+                interpretationHTML += `
+                    <div class="interpretation-section">
+                        <h3>${appState.currentUser.name}，您在团队中的第二种角色可能是：${secondaryRole.role.name}</h3>
+                        <p>如果您所在的团队和您本人有需要，也可以开发和提升您的这个角色。</p>
+                        <p><strong>主要描述：</strong>${secondaryRole.role.description}</p>
+                        <p><strong>优势：</strong>${secondaryRole.role.strengths}</p>
+                        <p><strong>可接受的弱点：</strong>${secondaryRole.role.weaknesses}</p>
+                        <p><strong>对团队的贡献：</strong>${secondaryRole.role.contributions}</p>
+                    </div>
+                `;
+            }
+            
+            // 结尾祝福和落款
+            interpretationHTML += `
+                <div class="interpretation-section">
+                    <p>感谢您参与本次贝尔宾团队角色测试！了解自己在团队中的角色倾向是提升团队协作效能的重要一步。</p>
+                    <p>希望这份报告能帮助您更好地理解自己的团队角色，并在未来的职业生涯中发挥更大的价值。祝您工作顺利，团队合作愉快！</p>
+                </div>
+                <div class="signature">
+                    <p>重庆工商大学 鄢清华</p>
+                    <p>${formattedDate}</p>
+                </div>
+            `;
+            
+            roleDetailsContainer.innerHTML = interpretationHTML;
+            
+            showScreen('interpretation');
+        }
+
+        // 重新开始测试
+        function restartTest() {
+            if (confirm('确定要重新开始测试吗？当前测试结果将被清除。')) {
+                appState.userAnswers = Array(7).fill().map(() => Array(9).fill(0));
+                appState.currentPart = 0;
+                startTest();
+            }
+        }
+
+        // 初始化应用
+        function initApp() {
+            initEventListeners();
+            
+            // 检查是否已有登录用户
+            try {
+                const currentUser = localStorage.getItem('belbinCurrentUser');
+                if (currentUser) {
+                    appState.currentUser = JSON.parse(currentUser);
+                    showWelcomeScreen();
+                } else {
+                    showScreen('login');
+                }
+            } catch (e) {
+                console.error('初始化应用时出错:', e);
+                showScreen('login');
+            }
+        }
+
+        // 启动应用
+        window.addEventListener('DOMContentLoaded', initApp);
+    </script>
+<script>
+(function(){
+  // Build i18n object
+  const i18n = {
+    zh: { name: "中文", ui: {
+      app_title:"贝尔宾团队角色测试",
+      label_username:"用户名", label_password:"密码", label_confirm_pwd:"确认密码",
+      ph_username:"请输入用户名", ph_password:"请输入密码", ph_confirm_password:"请再次输入密码",
+      btn_login:"登录", btn_register:"注册新账号", btn_confirm_register:"确认注册",
+      btn_back_login:"← 返回登录",
+      welcome_title:"贝尔宾团队角色测试",
+      motto_1:"个人岂有完美 团队可臻至善",
+      motto_2:"测试程序开发：重庆工商大学 鄢清华",
+      welcome_p1:"欢迎参加贝尔宾团队角色测试！",
+      welcome_p2:"本测试将帮助您了解自己在团队中的角色倾向。",
+      welcome_p3:"测试共有7个部分，每个部分有9个陈述。",
+      welcome_p4:"每个部分您有10分可以分配给这些陈述，请根据您的实际情况分配分数。",
+      btn_start_test:"开始测试",
+      btn_back_home:"← 返回首页",
+      btn_prev:"上一部分",
+      btn_next:"下一部分",
+      btn_finish:"完成测试",
+      test_instruction:"您有10分可以分配给下面的9个陈述，某些陈述可以不给分，但总分必须恰好为10分。",
+      title_complete:"测试完成",
+      complete_p1:"恭喜您已完成所有测试部分！",
+      complete_p2:"是否查看报告？",
+      btn_view_report:"查看报告",
+      btn_back_prev:"← 返回上一页",
+      report_title:"您的贝尔宾团队角色测试结果",
+      chart_radar:"蛛网图", chart_bar:"柱状图", chart_polar:"极地区域图",
+      top_roles_title:"您的核心角色",
+      btn_view_interpretation:"查看角色详细解读",
+      btn_restart:"重新测试", btn_back_report:"← 返回报告",
+      interp_title:"角色详细解读",
+      points_remaining:"剩余分数",
+      alert_need_creds:"请输入用户名和密码",
+      alert_wrong_creds:"用户名或密码错误",
+      alert_pwd_mismatch:"两次输入的密码不一致",
+      alert_user_exists:"用户名已存在",
+      alert_register_ok:"注册成功，请登录",
+      alert_group_total: (n)=>`本部分您已分配了${n}分，请确保总分恰好为10分`,
+      user_welcome: (name)=>`欢迎，${name}`,
+      user_label: (name)=>`用户: ${name}`,
+      role_primary_title: (name, role)=>`${name}，根据测试结果，您在团队中的主要角色是：${role}`,
+      role_secondary_title: (name, role)=>`${name}，您在团队中的第二种角色可能是：${role}`,
+      role_secondary_hint:"如果您所在的团队和您本人有需要，也可以开发和提升您的这个角色。",
+      section_desc:"主要描述", section_strengths:"优势",
+      section_weaknesses:"可接受的弱点", section_contrib:"对团队的贡献",
+      section_thanks_1:"感谢您参与本次贝尔宾团队角色测试！了解自己在团队中的角色倾向是提升团队协作效能的重要一步。",
+      section_thanks_2:"希望这份报告能帮助您更好地理解自己的团队角色，并在未来的职业生涯中发挥更大的价值。祝您工作顺利，团队合作愉快！",
+      sign_org:"重庆工商大学 鄢清华",
+      chart_role_label:"角色得分"
+    }},
+    en: { name:"English", ui:{
+      app_title:"Belbin Team Roles Test",
+      label_username:"Username", label_password:"Password", label_confirm_pwd:"Confirm Password",
+      ph_username:"Enter username", ph_password:"Enter password", ph_confirm_password:"Re-enter password",
+      btn_login:"Log in", btn_register:"Register", btn_confirm_register:"Confirm Registration",
+      btn_back_login:"← Back to Login",
+      welcome_title:"Belbin Team Roles Test",
+      motto_1:"No one is perfect; together a team can be.",
+      motto_2:"Program by: Chongqing Technology and Business University · Yan Qinghua",
+      welcome_p1:"Welcome to the Belbin Team Roles assessment!",
+      welcome_p2:"This test helps you understand your preferred roles in a team.",
+      welcome_p3:"There are 7 parts, each with 9 statements.",
+      welcome_p4:"In each part you have 10 points to allocate across the statements.",
+      btn_start_test:"Start Test",
+      btn_back_home:"← Back to Home",
+      btn_prev:"Previous Part",
+      btn_next:"Next Part",
+      btn_finish:"Finish Test",
+      test_instruction:"Allocate a total of 10 points across the 9 statements below. Some may be zero, but the total must equal exactly 10.",
+      title_complete:"Test Completed",
+      complete_p1:"Great! You've finished all parts.",
+      complete_p2:"Would you like to view your report?",
+      btn_view_report:"View Report",
+      btn_back_prev:"← Back",
+      report_title:"Your Belbin Team Roles Results",
+      chart_radar:"Radar", chart_bar:"Bar", chart_polar:"Polar Area",
+      top_roles_title:"Your Core Roles",
+      btn_view_interpretation:"View Detailed Interpretation",
+      btn_restart:"Restart", btn_back_report:"← Back to Report",
+      interp_title:"Detailed Role Interpretation",
+      points_remaining:"Points Left",
+      alert_need_creds:"Please enter username and password",
+      alert_wrong_creds:"Incorrect username or password",
+      alert_pwd_mismatch:"Passwords do not match",
+      alert_user_exists:"Username already exists",
+      alert_register_ok:"Registered! Please log in.",
+      alert_group_total:(n)=>`You have allocated ${n} points. The total must be exactly 10.`,
+      user_welcome:(name)=>`Welcome, ${name}`,
+      user_label:(name)=>`User: ${name}`,
+      role_primary_title:(name, role)=>`${name}, your primary team role is: ${role}`,
+      role_secondary_title:(name, role)=>`${name}, your secondary role may be: ${role}`,
+      role_secondary_hint:"You may develop and strengthen this role if needed by you or your team.",
+      section_desc:"Description", section_strengths:"Strengths", section_weaknesses:"Allowable Weaknesses", section_contrib:"Contributions",
+      section_thanks_1:"Thanks for taking the Belbin assessment! Understanding your roles is a key step to better collaboration.",
+      section_thanks_2:"We hope this report helps you leverage your strengths at work and in your career. Wishing you every success!",
+      sign_org:"Chongqing Technology and Business University · Yan Qinghua",
+      chart_role_label:"Role Score"
+    }},
+    fr:{ name:"Français", ui:{
+      app_title:"Test des rôles d’équipe Belbin",
+      label_username:"Nom d’utilisateur", label_password:"Mot de passe", label_confirm_pwd:"Confirmer le mot de passe",
+      ph_username:"Saisir le nom d’utilisateur", ph_password:"Saisir le mot de passe", ph_confirm_password:"Resaisir le mot de passe",
+      btn_login:"Se connecter", btn_register:"Créer un compte", btn_confirm_register:"Valider l’inscription",
+      btn_back_login:"← Retour à la connexion",
+      welcome_title:"Test des rôles d’équipe Belbin",
+      motto_1:"Aucun individu n’est parfait ; ensemble, une équipe peut l’être.",
+      motto_2:"Programme : CTBU · Yan Qinghua",
+      welcome_p1:"Bienvenue au questionnaire Belbin !",
+      welcome_p2:"Ce test vous aide à comprendre vos rôles préférés en équipe.",
+      welcome_p3:"Il y a 7 parties, chacune avec 9 affirmations.",
+      welcome_p4:"Dans chaque partie, vous disposez de 10 points à répartir.",
+      btn_start_test:"Commencer",
+      btn_back_home:"← Accueil",
+      btn_prev:"Partie précédente",
+      btn_next:"Partie suivante",
+      btn_finish:"Terminer le test",
+      test_instruction:"Répartissez exactement 10 points entre les 9 affirmations ci-dessous. Certaines peuvent recevoir 0.",
+      title_complete:"Test terminé",
+      complete_p1:"Bravo ! Vous avez terminé toutes les parties.",
+      complete_p2:"Voulez-vous consulter votre rapport ?",
+      btn_view_report:"Voir le rapport",
+      btn_back_prev:"← Retour",
+      report_title:"Vos résultats Belbin",
+      chart_radar:"Radar", chart_bar:"Histogramme", chart_polar:"Zone polaire",
+      top_roles_title:"Vos rôles clés",
+      btn_view_interpretation:"Voir l’interprétation détaillée",
+      btn_restart:"Recommencer", btn_back_report:"← Retour au rapport",
+      interp_title:"Interprétation détaillée",
+      points_remaining:"Points restants",
+      alert_need_creds:"Veuillez saisir le nom d’utilisateur et le mot de passe",
+      alert_wrong_creds:"Identifiant ou mot de passe incorrect",
+      alert_pwd_mismatch:"Les mots de passe ne correspondent pas",
+      alert_user_exists:"Ce nom d’utilisateur existe déjà",
+      alert_register_ok:"Inscription réussie ! Connectez-vous.",
+      alert_group_total:(n)=>`Vous avez attribué ${n} points. Le total doit être 10.`,
+      user_welcome:(name)=>`Bienvenue, ${name}`,
+      user_label:(name)=>`Utilisateur : ${name}`,
+      role_primary_title:(name, role)=>`${name}, votre rôle principal est : ${role}`,
+      role_secondary_title:(name, role)=>`${name}, votre rôle secondaire pourrait être : ${role}`,
+      role_secondary_hint:"Vous pouvez développer ce rôle selon les besoins.",
+      section_desc:"Description", section_strengths:"Forces", section_weaknesses:"Faiblesses tolérables", section_contrib:"Contributions",
+      section_thanks_1:"Merci d’avoir passé le test Belbin !", section_thanks_2:"Plein succès !",
+      sign_org:"Université CTBU · Yan Qinghua", chart_role_label:"Score par rôle"
+    }},
+    th:{ name:"ไทย", ui:{
+      app_title:"แบบทดสอบบทบาททีม Belbin",
+      label_username:"ชื่อผู้ใช้", label_password:"รหัสผ่าน", label_confirm_pwd:"ยืนยันรหัสผ่าน",
+      ph_username:"กรอกชื่อผู้ใช้", ph_password:"กรอกรหัสผ่าน", ph_confirm_password:"กรอกรหัสผ่านอีกครั้ง",
+      btn_login:"เข้าสู่ระบบ", btn_register:"สมัครสมาชิก", btn_confirm_register:"ยืนยันการสมัคร",
+      btn_back_login:"← กลับสู่หน้าเข้าสู่ระบบ",
+      welcome_title:"แบบทดสอบบทบาททีม Belbin",
+      motto_1:"ไม่มีใครสมบูรณ์แบบ แต่ทีมสามารถสมบูรณ์ได้",
+      motto_2:"พัฒนาโดย: CTBU · Yan Qinghua",
+      welcome_p1:"ยินดีต้อนรับสู่แบบทดสอบ Belbin",
+      welcome_p2:"แบบทดสอบนี้ช่วยให้เข้าใจบทบาทที่คุณถนัดในทีม",
+      welcome_p3:"ทั้งหมด 7 ส่วน ส่วนละ 9 ข้อความ",
+      welcome_p4:"แต่ละส่วนมี 10 คะแนนให้จัดสรร",
+      btn_start_test:"เริ่มทำแบบทดสอบ",
+      btn_back_home:"← กลับหน้าหลัก",
+      btn_prev:"ส่วนก่อนหน้า",
+      btn_next:"ส่วนถัดไป",
+      btn_finish:"จบแบบทดสอบ",
+      test_instruction:"กระจาย 10 คะแนนให้ครบกับข้อความ 9 ข้อด้านล่าง",
+      title_complete:"ทำแบบทดสอบเสร็จ",
+      complete_p1:"เยี่ยม! คุณทำครบทุกส่วนแล้ว",
+      complete_p2:"ต้องการดูรายงานหรือไม่?",
+      btn_view_report:"ดูรายงาน",
+      btn_back_prev:"← กลับ",
+      report_title:"ผลลัพธ์บทบาททีม Belbin ของคุณ",
+      chart_radar:"เรดาร์", chart_bar:"แท่ง", chart_polar:"โพลาร์",
+      top_roles_title:"บทบาทเด่นของคุณ",
+      btn_view_interpretation:"ดูการอธิบายเชิงลึก",
+      btn_restart:"เริ่มใหม่", btn_back_report:"← กลับสู่รายงาน",
+      interp_title:"การตีความบทบาทโดยละเอียด",
+      points_remaining:"คะแนนคงเหลือ",
+      alert_need_creds:"กรอกชื่อผู้ใช้และรหัสผ่าน",
+      alert_wrong_creds:"ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง",
+      alert_pwd_mismatch:"รหัสผ่านไม่ตรงกัน",
+      alert_user_exists:"มีชื่อผู้ใช้นี้แล้ว",
+      alert_register_ok:"สมัครเสร็จแล้ว กรุณาเข้าสู่ระบบ",
+      alert_group_total:(n)=>`คุณให้ไปแล้ว ${n} คะแนน ต้องรวมกันเป็น 10 คะแนน`,
+      user_welcome:(name)=>`ยินดีต้อนรับ, ${name}`,
+      user_label:(name)=>`ผู้ใช้: ${name}`,
+      role_primary_title:(name, role)=>`${name} บทบาทหลักของคุณคือ: ${role}`,
+      role_secondary_title:(name, role)=>`${name} บทบาทรองของคุณอาจเป็น: ${role}`,
+      role_secondary_hint:"สามารถพัฒนาบทบาทนี้ได้หากจำเป็น",
+      section_desc:"คำอธิบาย", section_strengths:"จุดแข็ง", section_weaknesses:"จุดอ่อนที่ยอมรับได้", section_contrib:"สิ่งที่มอบให้ทีม",
+      section_thanks_1:"ขอบคุณที่ทำแบบทดสอบ Belbin!", section_thanks_2:"ขอให้โชคดี!",
+      sign_org:"มหาวิทยาลัย CTBU · Yan Qinghua", chart_role_label:"คะแนนบทบาท"
+    }},
+    ru:{ name:"Русский", ui:{
+      app_title:"Тест ролей Белбина",
+      label_username:"Имя пользователя", label_password:"Пароль", label_confirm_pwd:"Подтверждение пароля",
+      ph_username:"Введите имя пользователя", ph_password:"Введите пароль", ph_confirm_password:"Повторите пароль",
+      btn_login:"Войти", btn_register:"Регистрация", btn_confirm_register:"Подтвердить",
+      btn_back_login:"← Назад к входу",
+      welcome_title:"Тест Белбина",
+      motto_1:"Один не совершенен; команда может быть.", motto_2:"Программа: CTBU · Ян Цинхуа",
+      welcome_p1:"Добро пожаловать в тест Белбина!", welcome_p2:"Он помогает понять ваши роли в команде.",
+      welcome_p3:"7 разделов по 9 утверждений.", welcome_p4:"В каждом разделе распределите 10 баллов.",
+      btn_start_test:"Начать", btn_back_home:"← На главную", btn_prev:"Предыдущий раздел", btn_next:"Следующий раздел", btn_finish:"Завершить тест",
+      test_instruction:"Распределите ровно 10 баллов между 9 утверждениями ниже.",
+      title_complete:"Тест завершён", complete_p1:"Отлично! Все разделы пройдены.", complete_p2:"Открыть отчёт?",
+      btn_view_report:"Показать отчёт", btn_back_prev:"← Назад", report_title:"Ваши результаты Белбина",
+      chart_radar:"Радар", chart_bar:"Столбцы", chart_polar:"Полярная",
+      top_roles_title:"Ваши ключевые роли",
+      btn_view_interpretation:"Детальная интерпретация", btn_restart:"Сбросить", btn_back_report:"← Назад к отчёту",
+      interp_title:"Подробная интерпретация", points_remaining:"Осталось баллов",
+      alert_need_creds:"Введите имя пользователя и пароль", alert_wrong_creds:"Неверные имя пользователя или пароль",
+      alert_pwd_mismatch:"Пароли не совпадают", alert_user_exists:"Имя пользователя уже занято", alert_register_ok:"Регистрация прошла успешно. Войдите.",
+      alert_group_total:(n)=>`Вы распределили ${n} баллов. Нужно ровно 10.`,
+      user_welcome:(name)=>`Добро пожаловать, ${name}`, user_label:(name)=>`Пользователь: ${name}`,
+      role_primary_title:(name, role)=>`${name}, ваша основная роль: ${role}`,
+      role_secondary_title:(name, role)=>`${name}, потенциальная вторичная роль: ${role}`,
+      role_secondary_hint:"Эту роль можно развивать при необходимости.",
+      section_desc:"Описание", section_strengths:"Сильные стороны", section_weaknesses:"Допустимые слабости", section_contrib:"Вклад",
+      section_thanks_1:"Спасибо за прохождение теста Белбина!", section_thanks_2:"Успехов!",
+      sign_org:"CTBU · Ян Цинхуа", chart_role_label:"Баллы роли"
+    }},
+    id:{ name:"Bahasa Indonesia", ui:{
+      app_title:"Tes Peran Tim Belbin",
+      label_username:"Nama pengguna", label_password:"Kata sandi", label_confirm_pwd:"Konfirmasi kata sandi",
+      ph_username:"Masukkan nama pengguna", ph_password:"Masukkan kata sandi", ph_confirm_password:"Masukkan ulang kata sandi",
+      btn_login:"Masuk", btn_register:"Daftar", btn_confirm_register:"Konfirmasi pendaftaran",
+      btn_back_login:"← Kembali ke Login",
+      welcome_title:"Tes Peran Tim Belbin",
+      motto_1:"Tak ada yang sempurna sendirian; tim bisa jadi sempurna.", motto_2:"Program: CTBU · Yan Qinghua",
+      welcome_p1:"Selamat datang di tes Belbin!", welcome_p2:"Tes ini membantu memahami peran Anda di dalam tim.",
+      welcome_p3:"Terdapat 7 bagian, masing-masing 9 pernyataan.", welcome_p4:"Setiap bagian memiliki 10 poin untuk dibagikan.",
+      btn_start_test:"Mulai Tes", btn_back_home:"← Beranda", btn_prev:"Bagian Sebelumnya", btn_next:"Bagian Berikutnya", btn_finish:"Selesai",
+      test_instruction:"Bagikan tepat 10 poin ke 9 pernyataan di bawah.",
+      title_complete:"Tes Selesai", complete_p1:"Bagus! Anda telah menyelesaikan semua bagian.", complete_p2:"Ingin melihat laporan?",
+      btn_view_report:"Lihat Laporan", btn_back_prev:"← Kembali", report_title:"Hasil Peran Tim Belbin Anda",
+      chart_radar:"Radar", chart_bar:"Batang", chart_polar:"Polar Area",
+      top_roles_title:"Peran Utama Anda",
+      btn_view_interpretation:"Lihat Interpretasi Detail", btn_restart:"Mulai Ulang", btn_back_report:"← Kembali ke Laporan",
+      interp_title:"Interpretasi Peran Terperinci", points_remaining:"Sisa Poin",
+      alert_need_creds:"Masukkan nama pengguna dan kata sandi", alert_wrong_creds:"Nama pengguna atau kata sandi salah",
+      alert_pwd_mismatch:"Kata sandi tidak cocok", alert_user_exists:"Nama pengguna sudah ada", alert_register_ok:"Pendaftaran berhasil. Silakan masuk.",
+      alert_group_total:(n)=>`Anda telah membagikan ${n} poin. Total harus tepat 10.`,
+      user_welcome:(name)=>`Selamat datang, ${name}`, user_label:(name)=>`Pengguna: ${name}`,
+      role_primary_title:(name, role)=>`${name}, peran utama Anda: ${role}`,
+      role_secondary_title:(name, role)=>`${name}, peran sekunder Anda mungkin: ${role}`,
+      role_secondary_hint:"Peran ini dapat dikembangkan sesuai kebutuhan.",
+      section_desc:"Deskripsi", section_strengths:"Kekuatan", section_weaknesses:"Kelemahan yang Dapat Diterima", section_contrib:"Kontribusi",
+      section_thanks_1:"Terima kasih telah mengikuti tes Belbin!", section_thanks_2:"Sukses selalu!",
+      sign_org:"CTBU · Yan Qinghua", chart_role_label:"Skor Peran"
+    }}
+  };
+
+  // Build parts and roles for each language
+  const enParts = [
+    { title:"Part 1: How I believe I contribute to a team", questions:[
+      "I can quickly spot and seize new opportunities.","I work well with people of different types.","I usually sense what is realistic and what is possible.",
+      "I get things done mainly through my own effort.","When I notice someone valuable to the team goal, I promptly bring them in.",
+      "My professional knowledge and skills are my main asset.","When choosing a course of action, I can propose a reasonable alternative without bias.","I am a natural idea-generator.",
+      "If the outcome is beneficial, I can tolerate initial indifference or pushback."
+    ]},
+    { title:"Part 2: My possible weaknesses in a team", questions:[
+      "If a meeting is poorly organized or chaired, I feel uncomfortable.","My objectivity sometimes makes it hard to fit in socially with colleagues.",
+      "Because I value group climate, I sometimes struggle to stand out.","I can get lost in sudden flights of imagination and forget ongoing work.",
+      "Colleagues think I over-focus on details and worry unnecessarily about mistakes.","When something must be done, I can come across as forceful or even overbearing.",
+      "I may be too tolerant of people who have good ideas but do not present them properly.","I’m reluctant to contribute unless the topic is highly relevant to me.","When new ideas are discussed, I tend to talk too much."
+    ]},
+    { title:"Part 3: When working with others", questions:[
+      "I am among the first to present original insights.","I constantly guard against carelessness and oversight.","I can influence others without exerting pressure.",
+      "I eagerly seek new thinking and developments.","I strive to uphold professional ethics.","I trust my judgment to help make the right decisions.",
+      "I am willing to back positive suggestions for the common good.","I will press for action to ensure meetings aren't time-wasting or off-topic.","I reassure others by organizing the basics meticulously."
+    ]},
+    { title:"Part 4: My characteristics in a work team", questions:[
+      "I am keen to learn more about my colleagues.","Though I consider all views, I still decide firmly when needed.","I often challenge others’ views or stand by my own.",
+      "Once a plan must start, I can drive execution.","I deliberately avoid standing out or being unpredictable.","I enjoy connecting with people outside the team.",
+      "Whatever task I take on, I pursue excellence.","In debates I usually find arguments to refute weak claims.","I contribute most when I am clear about the topic."
+    ]},
+    { title:"Part 5: Why I feel satisfied at work", questions:[
+      "I like analyzing situations and weighing all options.","I feel I help the team by using my expertise.","I enjoy a space where imagination can flourish.",
+      "I have a temperament that lets me devote myself wholeheartedly to work.","I’m interested in finding feasible solutions to problems.","I feel I promote good working relationships.",
+      "I can adapt to people with novel ideas.","I help build consensus for necessary actions.","I can strongly influence decisions."
+    ]},
+    { title:"Part 6: If I’m suddenly given a tough task with limited time and unfamiliar people", questions:[
+      "I will read as much as possible to seek guidance.","Despite difficulties, I keep the goal consistent.","I’ll open wide discussion to spark ideas and drive work forward.",
+      "I can keep cool and think in an orderly way.","I’ll reduce workload by deploying people to their strengths.","Before a new plan emerges, I prefer to step aside and draft a way out.",
+      "If the team stalls, I take active measures to push progress.","My natural sense of urgency helps us stay on schedule.","I prefer to work with those who show a positive attitude."
+    ]},
+    { title:"Part 7: Regarding problems encountered in team work", questions:[
+      "I easily become impatient with those who block progress.","When I clash with true opposites, I can’t always get my point across.","I dislike feeling my time is wasted and would rather work alone.",
+      "For things I cannot do, I consciously seek help from others.","I may become bored and need one or two passionate people to lift me.","My strong desire for perfection can slow continuous progress.",
+      "Others may say I over-analyze and lack intuition.","If the goal is unclear, it’s hard for me to get started.","I sometimes struggle to explain or clarify complex issues I face."
+    ]}
+  ];
+
+  // Roles translations for non-zh languages
+  const roleKeys = ["IMP","CO","SH","PL","RI","ME","TW","CF","SP"];
+  const zhRoles = (testData.roles || []).map((r,i)=>({code:roleKeys[i], name:r.name, description:r.description, strengths:r.strengths, weaknesses:r.weaknesses, contributions:r.contributions }));
+  const enRoles = [
+    {code:"IMP",name:"Implementer",description:"Pragmatic and reliable; turns ideas into actions.",strengths:"Disciplined, efficient, well-organized; converts concepts into practical tasks.",weaknesses:"May be inflexible and slow to respond to new possibilities; sometimes conservative.",contributions:"Translates decisions and concepts into manageable tasks and executes plans systematically."},
+    {code:"CO",name:"Coordinator",description:"Mature and confident; clarifies goals and facilitates decisions.",strengths:"Clarifies objectives, delegates appropriately, identifies talent and resources.",weaknesses:"May be seen as manipulative or delegating own work; sometimes lacks hands-on input.",contributions:"Keeps the team focused on goals, facilitates decision-making, and unlocks members’ potential."},
+    {code:"SH",name:"Shaper",description:"Challenging and dynamic; thrives under pressure and overcomes obstacles.",strengths:"Drives pace, challenges inertia and complacency, pushes the team forward.",weaknesses:"Can be provocative, impatient, and hurt others’ feelings; may trigger conflict.",contributions:"Provides energy and drive; raises performance standards especially under pressure."},
+    {code:"PL",name:"Plant",description:"Creative and imaginative; solves difficult problems.",strengths:"Generates original ideas and strategies; solves complex issues.",weaknesses:"May ignore detail and get absorbed in ideas; sometimes poor at follow-through.",contributions:"Offers novel approaches and focuses on big issues to create innovative solutions."},
+    {code:"RI",name:"Resource Investigator",description:"Outgoing and enthusiastic; explores opportunities and builds contacts.",strengths:"Communicative networker; spots opportunities and develops external links.",weaknesses:"May be over-optimistic and lose interest once initial enthusiasm fades.",contributions:"Explores external resources, develops useful contacts, and negotiates for team benefit."},
+    {code:"ME",name:"Monitor Evaluator",description:"Sober and strategic; makes accurate judgments.",strengths:"Objective analysis, critical thinking, sound judgment.",weaknesses:"May lack drive to inspire others; can appear detached and critical.",contributions:"Weighs options carefully and steers the team away from poor decisions."},
+    {code:"TW",name:"Teamworker",description:"Cooperative and perceptive; averts friction and supports others.",strengths:"Diplomatic, attentive, fosters harmony and cohesion in the team.",weaknesses:"May avoid confrontation and be indecisive at critical moments.",contributions:"Supports colleagues and helps maintain harmony, especially under pressure."},
+    {code:"CF",name:"Completer Finisher",description:"Conscientious and detail-oriented; searches out errors and meets deadlines.",strengths:"Painstaking, quality-focused, detects omissions and ensures high standards.",weaknesses:"Reluctant to delegate, over-worries about small details, may lose sight of the big picture.",contributions:"Prevents careless mistakes, monitors critical tasks, and keeps a healthy sense of urgency."},
+    {code:"SP",name:"Specialist",description:"Single-minded and self-motivated; provides rare skills and knowledge.",strengths:"Deep expertise and focus in a key domain; valuable technical contribution.",weaknesses:"Contribution may be narrow; may overlook the bigger picture and struggle to communicate with non-specialists.",contributions:"Provides specialist knowledge and solves technical problems in critical areas."}
+  ];
+
+  i18n.zh.parts = testData.parts;
+  i18n.zh.roles = zhRoles;
+
+  // For non-zh languages, reuse English parts; you can later replace with full translations
+  ["en","fr","th","ru","id"].forEach(l=>{
+    i18n[l].parts = enParts;
+  });
+  i18n.en.roles = enRoles;
+  // For other languages, temporarily map roles to English names (can translate later)
+  ["fr","th","ru","id"].forEach(l=>{ i18n[l].roles = enRoles; });
+
+  // Expose i18n
+  window._i18n = i18n;
+
+  // Language state + helpers
+  const state = { lang: localStorage.getItem('belbinLang') || 'zh' };
+  function setLang(lang){
+    state.lang = lang;
+    localStorage.setItem('belbinLang', lang);
+    document.getElementById('lang-current').textContent = i18n[lang].name;
+    applyI18n();
+    // re-render current screens if needed
+    if(document.getElementById('welcome-screen')?.classList.contains('active')){ updateWelcomeTexts(); }
+    if(document.getElementById('test-screen')?.classList.contains('active')){ loadTestPart(appState.currentPart); }
+    if(document.getElementById('report-screen')?.classList.contains('active')){ showReportScreen(); }
+    if(document.getElementById('interpretation-screen')?.classList.contains('active')){ showInterpretationScreen(); }
+  }
+  window.setLang = setLang;
+
+  function t(key){ const v = i18n[state.lang].ui[key]; return (typeof v==='function')?v: (v ?? _i18n.en.ui[key] ?? key); }
+  function tn(key, ...args){ const v = i18n[state.lang].ui[key]; return (typeof v==='function')?v(...args): (v ?? key); }
+  window._t = t; window._tn = tn;
+
+  function getParts(){ return i18n[state.lang].parts; }
+  function getRoles(){ return i18n[state.lang].roles; }
+  window._getParts = getParts; window._getRoles = getRoles;
+
+  function updateWelcomeTexts(){
+    const ws = document.getElementById('welcome-screen');
+    if(!ws) return;
+    ws.querySelector('h1').textContent = t('welcome_title');
+    const motto = ws.querySelector('.motto');
+    if(motto){
+      motto.querySelector('.motto-line1').textContent = t('motto_1');
+      motto.querySelector('.motto-line2').textContent = t('motto_2');
+    }
+    const msgs = ws.querySelectorAll('.welcome-message p');
+    if(msgs.length>=4){
+      msgs[0].textContent = t('welcome_p1');
+      msgs[1].textContent = t('welcome_p2');
+      msgs[2].textContent = t('welcome_p3');
+      msgs[3].textContent = t('welcome_p4');
+    }
+    const startBtn = document.getElementById('start-test-btn');
+    if(startBtn) startBtn.textContent = t('btn_start_test');
+  }
+
+  function applyI18n(){
+    // Login
+    const ls = document.getElementById('login-screen');
+    if(ls){
+      ls.querySelector('h1').textContent = t('app_title');
+      const labels = ls.querySelectorAll('label');
+      if(labels[0]) labels[0].textContent = t('label_username');
+      if(labels[1]) labels[1].textContent = t('label_password');
+      const u = document.getElementById('username'); if(u) u.placeholder = t('ph_username');
+      const p = document.getElementById('password'); if(p) p.placeholder = t('ph_password');
+      const lb = document.getElementById('login-btn'); if(lb) lb.textContent = t('btn_login');
+      const rb = document.getElementById('register-btn'); if(rb) rb.textContent = t('btn_register');
+    }
+    // Register
+    const rs = document.getElementById('register-screen');
+    if(rs){
+      rs.querySelector('h1') && (rs.querySelector('h1').textContent = t('btn_register'));
+      const labels = rs.querySelectorAll('label');
+      if(labels[0]) labels[0].textContent = t('label_username');
+      if(labels[1]) labels[1].textContent = t('label_password');
+      if(labels[2]) labels[2].textContent = t('label_confirm_pwd');
+      const nu = document.getElementById('new-username'); if(nu) nu.placeholder = t('ph_username');
+      const np = document.getElementById('new-password'); if(np) np.placeholder = t('ph_password');
+      const cp = document.getElementById('confirm-password'); if(cp) cp.placeholder = t('ph_confirm_password');
+      const cb = document.getElementById('confirm-register-btn'); if(cb) cb.textContent = t('btn_confirm_register');
+      const back = document.getElementById('back-to-login-from-register'); if(back) back.textContent = t('btn_back_login');
+    }
+    // Welcome
+    const backWel = document.getElementById('back-to-login-from-welcome'); if(backWel) backWel.textContent = t('btn_back_login');
+    updateWelcomeTexts();
+
+    // Test screen
+    const bth = document.getElementById('back-to-welcome-from-test'); if(bth) bth.textContent = t('btn_back_home');
+    const instr = document.querySelector('#test-screen .test-instructions p'); if(instr){ instr.innerHTML = `<strong>${t('test_instruction').split('：')[0]}：</strong>${t('test_instruction')}`; }
+    const prev = document.getElementById('prev-part-btn'); if(prev) prev.textContent = t('btn_prev');
+    const next = document.getElementById('next-part-btn'); if(next) next.textContent = t('btn_next');
+    const prf = document.getElementById('points-remaining-fixed'); if(prf) prf.textContent = `${t('points_remaining')}: 10`;
+    const prs = document.getElementById('points-remaining-sticky'); if(prs) prs.textContent = `${t('points_remaining')}: 10`;
+
+    // Complete screen
+    const btt = document.getElementById('back-to-test-from-complete'); if(btt) btt.textContent = t('btn_back_home');
+    const tcs = document.getElementById('test-complete-screen'); 
+    if(tcs){
+      const h1 = tcs.querySelector('h1'); if(h1) h1.textContent = t('title_complete');
+      const ps = tcs.querySelectorAll('p');
+      if(ps[0]) ps[0].textContent = t('complete_p1');
+      if(ps[1]) ps[1].textContent = t('complete_p2');
+      const v = document.getElementById('view-report-btn'); if(v) v.textContent = t('btn_view_report');
+    }
+
+    // Report screen
+    const br = document.getElementById('back-to-complete-from-report'); if(br) br.textContent = t('btn_back_prev');
+    const rscr = document.getElementById('report-screen');
+    if(rscr){
+      const h2 = rscr.querySelector('h2'); if(h2) h2.textContent = t('report_title');
+      const btns = rscr.querySelectorAll('.chart-type-btn');
+      if(btns[0]) btns[0].textContent = t('chart_radar');
+      if(btns[1]) btns[1].textContent = t('chart_bar');
+      if(btns[2]) btns[2].textContent = t('chart_polar');
+      const interBtn = document.getElementById('view-interpretation-btn'); if(interBtn) interBtn.textContent = t('btn_view_interpretation');
+      const homeBtn = document.getElementById('back-to-welcome-from-report'); if(homeBtn) homeBtn.textContent = t('btn_back_home');
+      const restartBtn = document.getElementById('restart-test-btn'); if(restartBtn) restartBtn.textContent = t('btn_restart');
+      const topTitle = rscr.querySelector('.role-interpretation h3'); if(topTitle) topTitle.textContent = t('top_roles_title');
+    }
+
+    // Interpretation screen
+    const bir = document.getElementById('back-to-report-from-interpretation'); if(bir) bir.textContent = t('btn_back_report');
+    const ih2 = document.querySelector('#interpretation-screen h2'); if(ih2) ih2.textContent = t('interp_title');
+  }
+
+  // Override loadTestPart to use language parts + labels
+  const _orig_load = window.loadTestPart;
+  window.loadTestPart = function(partIndex){
+    const parts = getParts();
+    const part = parts[partIndex];
+    document.getElementById('test-part-title').textContent = part.title;
+    document.getElementById('prev-part-btn').style.display = partIndex > 0 ? 'block' : 'none';
+    const nextBtn = document.getElementById('next-part-btn');
+    if(nextBtn) nextBtn.textContent = partIndex < 6 ? t('btn_next') : t('btn_finish');
+
+    const questionsContainer = document.getElementById('questions-container');
+    questionsContainer.innerHTML = '';
+
+    const sticky = document.createElement('div');
+    sticky.className = 'points-remaining-sticky';
+    sticky.id = 'points-remaining-sticky';
+    sticky.textContent = `${t('points_remaining')}: 10`;
+    questionsContainer.appendChild(sticky);
+
+    part.questions.forEach((q, idx)=>{
+      const wrap = document.createElement('div');
+      wrap.className = 'question';
+      wrap.innerHTML = `<p>${q}</p>
+      <div class="slider-container">
+        <input type="range" min="0" max="10" value="${appState.userAnswers[partIndex][idx]}" class="slider" data-part="${partIndex}" data-question="${idx}">
+        <span class="slider-value">${appState.userAnswers[partIndex][idx]}</span>
+      </div>`;
+      questionsContainer.appendChild(wrap);
+    });
+    document.querySelectorAll('.slider').forEach(s=>s.addEventListener('input', function(e){
+      const sld = e.target;
+      const pi = +sld.getAttribute('data-part');
+      const qi = +sld.getAttribute('data-question');
+      const val = +sld.value;
+      sld.nextElementSibling.textContent = val;
+      appState.userAnswers[pi][qi] = val;
+      updateRemainingPoints(pi);
+    }));
+    updateRemainingPoints(partIndex);
+    const prf = document.getElementById('points-remaining-fixed');
+    if(prf) prf.textContent = `${t('points_remaining')}: ${10 - (appState.userAnswers[partIndex]||[]).reduce((a,b)=>a+b,0)}`;
+  };
+
+  // Override displayTopRoles and showInterpretationScreen to use translated roles
+  window.displayTopRoles = function(roleScores){
+    const topRolesContainer = document.getElementById('top-roles');
+    topRolesContainer.innerHTML = '';
+    const roles = getRoles();
+    const roleScoreArray = roleScores.map((score, index)=>({ role: roles[index], score, index }));
+    roleScoreArray.sort((a,b)=>b.score-a.score);
+    roleScoreArray.slice(0,3).forEach(item=>{
+      const div = document.createElement('div');
+      div.className = 'role-item';
+      div.innerHTML = `<div class="role-name">${item.role.name}</div>
+                       <div class="role-score">${t('chart_role_label')}: ${item.score}</div>
+                       <p>${item.role.description}</p>`;
+      topRolesContainer.appendChild(div);
+    });
+  };
+
+  window.showInterpretationScreen = function(){
+    const label = tn('user_label', appState.currentUser?.name || appState.currentUser?.username || '');
+    document.getElementById('interpretation-user-info').textContent = label;
+    const roles = getRoles();
+    const arr = appState.roleScores.map((s,i)=>({s,i})).sort((a,b)=>b.s-a.s);
+    let html = '';
+    if(arr.length>0){
+      const r1 = roles[arr[0].i];
+      html += `<div class="interpretation-section">
+        <h3>${tn('role_primary_title', appState.currentUser?.name || '', r1.name)}</h3>
+        <p><strong>${t('section_desc')}：</strong>${r1.description}</p>
+        <p><strong>${t('section_strengths')}：</strong>${r1.strengths}</p>
+        <p><strong>${t('section_weaknesses')}：</strong>${r1.weaknesses}</p>
+        <p><strong>${t('section_contrib')}：</strong>${r1.contributions}</p>
+      </div>`;
+    }
+    if(arr.length>1){
+      const r2 = roles[arr[1].i];
+      html += `<div class="interpretation-section">
+        <h3>${tn('role_secondary_title', appState.currentUser?.name || '', r2.name)}</h3>
+        <p>${t('role_secondary_hint')}</p>
+        <p><strong>${t('section_desc')}：</strong>${r2.description}</p>
+        <p><strong>${t('section_strengths')}：</strong>${r2.strengths}</p>
+        <p><strong>${t('section_weaknesses')}：</strong>${r2.weaknesses}</p>
+        <p><strong>${t('section_contrib')}：</strong>${r2.contributions}</p>
+      </div>`;
+    }
+    html += `<div class="interpretation-section"><p>${t('section_thanks_1')}</p><p>${t('section_thanks_2')}</p></div>
+             <div class="signature"><p>${t('sign_org')}</p><p>${new Date().toLocaleDateString(state.lang==='zh'?'zh-CN':state.lang,{year:'numeric',month:'long',day:'numeric'})}</p></div>`;
+    document.getElementById('role-details').innerHTML = html;
+    document.getElementById('interpretation-screen').classList.add('active');
+    document.getElementById('report-screen').classList.remove('active');
+  };
+
+  // Override updateChart to use translated labels and roles
+  window.updateChart = function(chartType){
+    const ctx = document.getElementById('results-chart').getContext('2d');
+    if(appState.chart){ appState.chart.destroy(); }
+    const roles = getRoles();
+    const names = roles.map(r=>r.name);
+    const scores = appState.roleScores;
+    const pairs = scores.map((s,i)=>({s,i})).sort((a,b)=>b.s-a.s);
+    const namesSorted = pairs.map(o=>names[o.i]);
+    const scoresSorted = pairs.map(o=>o.s);
+    const maxScore = Math.max(...scoresSorted);
+    const second = scoresSorted.length>1 ? scoresSorted[1] : 0;
+
+    switch(chartType){
+      case 'radar':
+        appState.chart = new Chart(ctx, {
+          type: 'radar',
+          data: { labels: names, datasets:[{ label: t('chart_role_label'), data: scores,
+            backgroundColor:'rgba(52,152,219,.2)', borderColor:'rgba(52,152,219,1)', borderWidth:2,
+            pointBackgroundColor: scores.map(v=> v===maxScore ? 'rgba(243,156,18,1)' : 'rgba(52,152,219,1)'),
+            pointBorderColor:'#fff', pointBorderWidth:2, pointRadius:scores.map(v=> v===maxScore?8:5), pointHoverRadius:scores.map(v=> v===maxScore?10:7) }]},
+          options:{ scales:{ r:{ angleLines:{display:true,color:'rgba(255,255,255,.1)'}, grid:{color:'rgba(255,255,255,.1)'},
+            pointLabels:{color:'rgba(255,255,255,.85)',font:{size:12}}, ticks:{color:'rgba(255,255,255,.6)',backdropColor:'transparent'},
+            suggestedMin:0, suggestedMax: Math.max(...scores)+5 }}, plugins:{ legend:{display:false} } }
+        });
+        break;
+      case 'bar':
+        appState.chart = new Chart(ctx, {
+          type:'bar',
+          data:{ labels:namesSorted, datasets:[{ label:t('chart_role_label'), data:scoresSorted, backgroundColor:scoresSorted.map(v=> v===maxScore?'rgba(243,156,18,.75)':(v===second?'rgba(46,204,113,.75)':'rgba(52,152,219,.75)')), borderColor:scoresSorted.map(v=> v===maxScore?'rgba(243,156,18,1)':(v===second?'rgba(46,204,113,1)':'rgba(52,152,219,1)')), borderWidth:1 }]},
+          options:{ scales:{ y:{ beginAtZero:true, grid:{color:'rgba(255,255,255,.1)'}, ticks:{color:'rgba(255,255,255,.85)'} }, x:{ grid:{color:'rgba(255,255,255,.1)'}, ticks:{color:'rgba(255,255,255,.85)',maxRotation:45,minRotation:45} } }, plugins:{ legend:{display:false} } }
+        });
+        break;
+      default:
+        appState.chart = new Chart(ctx, {
+          type:'polarArea',
+          data:{ labels:namesSorted, datasets:[{ label:t('chart_role_label'), data:scoresSorted, backgroundColor:[ 'rgba(255,99,132,.7)','rgba(54,162,235,.7)','rgba(255,206,86,.7)','rgba(75,192,192,.7)','rgba(153,102,255,.7)','rgba(255,159,64,.7)','rgba(199,199,199,.7)','rgba(83,102,255,.7)','rgba(40,159,64,.7)'], borderWidth:1 }]},
+          options:{ scales:{ r:{ grid:{color:'rgba(255,255,255,.1)'}, ticks:{ color:'rgba(255,255,255,.6)', backdropColor:'transparent' }, suggestedMin:0, suggestedMax: Math.max(...scoresSorted)+5 } } }
+        });
+    }
+  };
+
+  // Language toggle events
+  document.addEventListener('DOMContentLoaded', function(){
+    // Apply language immediately
+    setLang(state.lang);
+    // FAB
+    const panel = document.getElementById('lang-panel');
+    const toggle = document.getElementById('lang-toggle');
+    if(toggle){
+      toggle.addEventListener('click', ()=>{ panel.style.display = panel.style.display==='block'?'none':'block'; });
+    }
+    if(panel){
+      panel.querySelectorAll('.lang-item').forEach(it=>{
+        it.addEventListener('click', ()=>{ setLang(it.getAttribute('data-lang')); panel.style.display='none'; });
+      });
+    }
+    document.addEventListener('click', (e)=>{
+      const fab = document.querySelector('.lang-fab');
+      if(fab && !fab.contains(e.target)) { if(panel) panel.style.display='none'; }
+    });
+  });
+})();
+</script>
+<style id="remaining-points-hud-style">
+.points-remaining-fixed{
+  position: fixed; top: 72px; right: 24px; z-index: 2000;
+  background: linear-gradient(145deg, #1f2937, #374151);
+  color: #fff; padding: 10px 14px; border-radius: 999px;
+  box-shadow: 0 10px 24px rgba(0,0,0,.35); font-weight: 700;
+  letter-spacing: .3px; user-select: none; pointer-events: none;
+}
+.points-remaining-fixed.flash{
+  animation: rpFlash .3s ease-in-out 1;
+}
+@keyframes rpFlash{
+  0%{ background:#7f1d1d; }
+  100%{ background: linear-gradient(145deg, #1f2937, #374151); }
+}
+.points-remaining-sticky{
+  position: sticky; top: 8px; align-self: flex-start;
+  background: rgba(0,0,0,.6); color: #fff; padding: 6px 10px;
+  border-radius: 999px; display: inline-block; margin-bottom: 8px;
+  font-weight: 600;
+}
+</style>
+<script id="remaining-points-hud-logic">
+(function(){
+  function ensureFixedHUD(){
+    let hud = document.getElementById('points-remaining-fixed');
+    if(!hud){
+      hud = document.createElement('div');
+      hud.id = 'points-remaining-fixed';
+      hud.className = 'points-remaining-fixed';
+      hud.textContent = (window._t ? _t('points_remaining') : 'Points Left') + ': 10';
+      document.body.appendChild(hud);
+    }
+    return hud;
+  }
+
+  // 包装提示效果
+  function flashHUD(){
+    const hud = ensureFixedHUD();
+    hud.classList.remove('flash');
+    void hud.offsetWidth; // reflow to restart animation
+    hud.classList.add('flash');
+  }
+
+  // 重写 updateRemainingPoints，统一刷新 HUD 与粘性提示
+  const _origUpdate = window.updateRemainingPoints;
+  window.updateRemainingPoints = function(partIndex){
+    const arr = (window.appState && appState.userAnswers && appState.userAnswers[partIndex]) ? appState.userAnswers[partIndex] : [];
+    const total = arr.reduce((a,b)=>a + (Number(b)||0), 0);
+    let left = 10 - total;
+    if(left < 0) left = 0; // 双保险，正常不会触发
+    const fixed = ensureFixedHUD();
+    const label = (window._t ? _t('points_remaining') : 'Points Left');
+    fixed.textContent = label + ': ' + left;
+
+    const sticky = document.getElementById('points-remaining-sticky');
+    if(sticky){ sticky.textContent = label + ': ' + left; }
+    const fixed2 = document.getElementById('points-remaining-fixed'); // 另一个引用
+    if(fixed2 && fixed2 !== fixed){ fixed2.textContent = label + ': ' + left; }
+  };
+
+  // 注入对 slider 的“硬限额”逻辑（在 i18n 覆写的 loadTestPart 之后再绑定）
+  function bindClamp(){
+    document.querySelectorAll('.slider').forEach(function(sld){
+      // 避免重复绑定
+      if(sld.dataset._clamped) return;
+      sld.dataset._clamped = "1";
+
+      sld.addEventListener('input', function(e){
+        const el = e.target;
+        const pi = +el.getAttribute('data-part');
+        const qi = +el.getAttribute('data-question');
+        let val = +el.value;
+        if(!window.appState || !appState.userAnswers || !appState.userAnswers[pi]) return;
+
+        const before = appState.userAnswers[pi][qi] || 0;
+        // 先写入，再检测超出
+        appState.userAnswers[pi][qi] = val;
+        let sum = appState.userAnswers[pi].reduce((a,b)=>a + (Number(b)||0), 0);
+
+        if(sum > 10){
+          const excess = sum - 10;
+          val = Math.max(0, val - excess);
+          appState.userAnswers[pi][qi] = val;
+          el.value = val;
+          const disp = el.nextElementSibling;
+          if(disp) disp.textContent = val;
+          flashHUD();
+          // 轻微蜂鸣（可选）：某些浏览器无效，安全忽略
+          try{ if(window.navigator && navigator.vibrate){ navigator.vibrate(30); } }catch(_){}
+        }
+
+        // 刷新剩余分
+        if(window.updateRemainingPoints) updateRemainingPoints(pi);
+      });
+    });
+  }
+
+  // 监听每次 loadTestPart 完成后绑定
+  const _origLoad = window.loadTestPart;
+  if(_origLoad){
+    window.loadTestPart = function(partIndex){
+      const ret = _origLoad.apply(this, arguments);
+      ensureFixedHUD();
+      bindClamp();
+      // 初次进入时同步一次
+      if(window.updateRemainingPoints) updateRemainingPoints(partIndex);
+      return ret;
+    };
+  }else{
+    // 异常fallback：DOMContentLoaded后尝试绑定（不太可能走到）
+    document.addEventListener('DOMContentLoaded', function(){
+      ensureFixedHUD();
+      bindClamp();
+      if(window.updateRemainingPoints) updateRemainingPoints(0);
+    });
+  }
+
+  // 初始就放一个HUD，避免白屏时无提示
+  document.addEventListener('DOMContentLoaded', function(){
+    ensureFixedHUD();
+  });
+})();
+</script>
+<script id="remaining-points-hud-logic-v2">
+(function(){
+  // stronger ensure
+  function ensureFixedHUDVisible(){
+    const hud = document.getElementById('points-remaining-fixed');
+    if(hud){
+      hud.style.display = 'block';
+      hud.style.position = 'fixed'; // guard
+      return hud;
+    }
+    const n = document.createElement('div');
+    n.id = 'points-remaining-fixed';
+    n.className = 'points-remaining-fixed';
+    n.textContent = (window._t ? _t('points_remaining') : 'Points Left') + ': 10';
+    document.body.appendChild(n);
+    return n;
+  }
+
+  function computeGroupTotal(partIndex){
+    // primary: use DOM sliders to avoid any state-sync issue
+    const sliders = document.querySelectorAll('.slider[data-part="'+partIndex+'"]');
+    if(sliders && sliders.length){
+      let sum = 0;
+      sliders.forEach(s => { const v = Number(s.value)||0; sum += v; });
+      return sum;
+    }
+    // fallback to appState
+    if(window.appState && appState.userAnswers && appState.userAnswers[partIndex]){
+      return appState.userAnswers[partIndex].reduce((a,b)=> a + (Number(b)||0), 0);
+    }
+    return 0;
+  }
+
+  // Hard clamp with DOM-based recompute
+  function clampCurrentSlider(el, partIndex){
+    let sum = computeGroupTotal(partIndex);
+    if(sum > 10){
+      const excess = sum - 10;
+      let v = Number(el.value)||0;
+      v = Math.max(0, v - excess);
+      el.value = v;
+      const disp = el.nextElementSibling; if(disp) disp.textContent = v;
+      try{ if(navigator && navigator.vibrate){ navigator.vibrate(25); } }catch(_){}
+      const hud = document.getElementById('points-remaining-fixed');
+      if(hud){ hud.classList.remove('flash'); void hud.offsetWidth; hud.classList.add('flash'); }
+      // keep state in sync if appState exists
+      const pi = +el.getAttribute('data-part'); const qi = +el.getAttribute('data-question');
+      if(window.appState && appState.userAnswers && appState.userAnswers[pi]){
+        appState.userAnswers[pi][qi] = v;
+      }
+    }
+  }
+
+  function refreshRemaining(partIndex){
+    const total = computeGroupTotal(partIndex);
+    const left = Math.max(0, 10 - total);
+    const label = (window._t ? _t('points_remaining') : 'Points Left');
+    const fixed = ensureFixedHUDVisible();
+    fixed.textContent = `${label}: ${left}`;
+    const sticky = document.getElementById('points-remaining-sticky'); if(sticky){ sticky.textContent = `${label}: ${left}`; }
+  }
+
+  function bindAll(){
+    ensureFixedHUDVisible();
+    document.querySelectorAll('.slider').forEach(function(sld){
+      if(sld.dataset._hud2) return; sld.dataset._hud2="1";
+      sld.addEventListener('input', function(e){
+        const el = e.target;
+        const pi = +el.getAttribute('data-part') || (window.appState?appState.currentPart:0);
+        // Update value mirror
+        const v = Number(el.value)||0;
+        const span = el.nextElementSibling; if(span){ span.textContent = v; }
+        // Clamp if needed
+        clampCurrentSlider(el, pi);
+        // Refresh numbers
+        refreshRemaining(pi);
+      });
+    });
+  }
+
+  // Intercept both loadTestPart and updateRemainingPoints (final overwrite)
+  const _origLoad = window.loadTestPart;
+  window.loadTestPart = function(partIndex){
+    const ret = _origLoad ? _origLoad.apply(this, arguments) : undefined;
+    bindAll();
+    refreshRemaining(partIndex);
+    return ret;
+  };
+
+  window.updateRemainingPoints = function(partIndex){
+    refreshRemaining(partIndex);
+  };
+
+  document.addEventListener('DOMContentLoaded', function(){
+    ensureFixedHUDVisible();
+    bindAll();
+    // if already in test screen, refresh
+    if(document.getElementById('test-screen')?.classList.contains('active')){
+      const pi = (window.appState?appState.currentPart:0);
+      refreshRemaining(pi);
+    }
+  });
+})();
+</script>
+
+<script id="goToNextPart-domtotal-fix">
+(function(){
+  function computeGroupTotalDom(partIndex){
+    const sliders = document.querySelectorAll('.slider[data-part="'+partIndex+'"]');
+    let sum = 0;
+    sliders.forEach(s => { sum += Number(s.value) || 0; });
+    return sum;
+  }
+  function syncDomToState(partIndex){
+    if(!window.appState || !appState.userAnswers || !appState.userAnswers[partIndex]) return;
+    const sliders = document.querySelectorAll('.slider[data-part="'+partIndex+'"]');
+    sliders.forEach((s, i) => {
+      appState.userAnswers[partIndex][i] = Number(s.value) || 0;
+    });
+  }
+  // override
+  window.goToNextPart = function(){
+    const currentPart = appState.currentPart;
+    // Always sync DOM -> state then compute
+    syncDomToState(currentPart);
+    const total = computeGroupTotalDom(currentPart);
+    if (total !== 10) {
+      const n = total; // already integer by slider steps
+      const msg = (window._tn ? _tn('alert_group_total', n) : `本部分您已分配了${n}分，请确保总分恰好为10分`);
+      alert(msg);
+      return;
+    }
+    if (currentPart < 6) {
+      appState.currentPart++;
+      // Reset HUD/sticky to 10 for new part
+      if(window.updateRemainingPoints) updateRemainingPoints(appState.currentPart);
+      loadTestPart(appState.currentPart);
+    } else {
+      // 完成最后一部分
+      saveTestResults();
+      document.getElementById('test-screen').classList.remove('active');
+      document.getElementById('test-complete-screen').classList.add('active');
+    }
+  };
+})();
+</script>
+</body>
+</html>
